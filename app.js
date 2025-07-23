@@ -1,51 +1,25 @@
-const { MongoClient } = require("mongodb");
-const uri = `mongodb://localhost:27017`;
-const client = new MongoClient(uri);
+const express = require("express");
+const mongoose = require("mongoose");
+const bodyParser = require("body-parser");
+const indexRouter = require("./routes/index");
 
-async function run() {
-  const database = client.db("firstDB");
-  const users = database.collection("users");
+const app = express();
+app.use(bodyParser.json());
+app.use("/api", indexRouter);
 
-  // 입력 create
-  // const userData = await users.insertOne({
-  //   name: "hongshii",
-  //   age: 100,
-  // });
+const mongoURI = `mongodb://localhost:27017/todo-demo`;
 
-  // const userList = [
-  //   {
-  //     name: "user1",
-  //     age: 100,
-  //   },
-  //   {
-  //     name: "user2",
-  //     age: 200,
-  //   },
-  // ];
-  // const userListResult = await users.insertMany(userList);
-  // console.log(userListResult);
+mongoose
+  .connect(mongoURI /*, { useNewUrlParser: true }*/)
+  .then(() => {
+    console.log("mongoose connected");
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 
-  // 조회 find
-  // const findUser = await users.findOne({ age: { $gt: 10 } });
-  // console.log(findUser);
-  // findOne 조건에 맞는게 여러개 있어도 하나만 반환
-  const userData = await users
-    .find({ name: "hongshii" })
-    .project({ name: 0, _id: 0 })
-    .toArray();
-  console.log(userData);
-  // _id는 명시적으로 제외하려면 반드시 '_id'
+app.listen(5000, () => {
+  console.log("server on 5000");
+});
 
-  // 수정 update
-
-  // const updateUser = await users.updateOne(
-  //   { name: "user1" },
-  //   { $set: { age: 20 } }
-  // );
-  // console.log(updateUser);
-
-  // 삭제 delete
-  // const deleteUser = await users.deleteMany({ age: { $gt: 100 } });
-  // console.log(deleteUser);
-}
-run();
+// !!Warning: useNewUrlParser is a deprecated
