@@ -9,7 +9,7 @@ userController.createUser = async (req, res) => {
     const { email, name, password } = req.body;
     const user = await User.findOne({ email });
     if (user) {
-      throw new Error("너 이미 가입함");
+      throw new Error("이미 가입한 이메일입니다.");
     }
     const salt = await bcrypt.genSalt(saltRounds);
     const hash = await bcrypt.hash(password, salt);
@@ -17,7 +17,7 @@ userController.createUser = async (req, res) => {
     await newUser.save();
     res.status(200).json({ status: "success" });
   } catch (error) {
-    res.status(400).json({ status: "fail", error });
+    res.status(400).json({ status: "fail", message: error.message });
   }
 };
 
@@ -35,7 +35,7 @@ userController.loginWithEmail = async (req, res) => {
     }
     throw new Error("아이디 또는 비밀번호가 일치하지 않습니다.");
   } catch (error) {
-    res.status(400).json({ status: "fail", error });
+    res.status(400).json({ status: "fail", message: error.message });
   }
 };
 
